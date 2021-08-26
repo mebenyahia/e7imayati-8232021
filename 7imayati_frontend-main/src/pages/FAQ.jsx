@@ -2,12 +2,24 @@ import React from "react";
 import { FaqsContainer } from "../containers/faqs";
 import { CarouselContainer } from "../containers/carousel";
 import { JumbotronContainer } from "../containers/jumbotron";
+import {Container, Row, Col} from "react-bootstrap";
+import HeaderFAQ from "../components/HeaderFAQ";
 
 
 
 const FAQ = () => {
   return (
 <> 
+
+<Container>
+<HeaderFAQ/>
+<Container>
+
+  
+  
+</Container>
+
+</Container>
     <div class="container">
         <div class="row">
             <div class="col-sm-5">

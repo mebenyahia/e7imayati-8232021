@@ -9,7 +9,7 @@ import {
 import { Container, Row, Col, Button } from "react-bootstrap";
 import { FaGreaterThanEqual, FaLessThanEqual } from "react-icons/fa";
 
-import AirData from "./../data/airquality.json";
+//import AirData from "./../data/airquality.json";
 
 import co2 from "./../assets/img/co2-symbol.svg";
 import airq from "./../assets/img/airq-symbol.svg";
@@ -22,10 +22,19 @@ import pin from "./../assets/img/pin.svg";
 import rabat from "./../assets/img/rabat.svg";
 import spacebar from "./../assets/img/spacebar.svg";
 import { markerIcon } from "../helpers/utils";
+
+import firebase from "firebase/app";
+import "firebase/database";
+import {
+  FirebaseDatabaseProvider,
+  FirebaseDatabaseNode,
+} from "@react-firebase/database";
+import { config } from "../firebase_config";
+
 /*Missing:
 Center elements 
 Add a nice container for the search bar
-Have an inferior or bigger option
+
 geocoding
 map legend 
 get the brackets for the value
@@ -34,13 +43,23 @@ have custom markers
 */
 
 const Map = () => {
+  const s = (a) => JSON.stringify(a);
+
+
+  const [AirData, setAirData] = useState(null);
+
+  const [airQualityData, setAirQualityData] = useState([]);
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [path, setPath] = React.useState("IOT/");
   const [searchby, setSearchby] = React.useState("CO");
   const [inputby, setInputby] = useState("");
   const [inputto, setInputto] = useState("");
   const [color, setColor] = React.useState("white");
+  
 
   const [filteredmonitors, setFilteredMonitors] = useState(
-    AirData.filter((air) => air.city === "Rabat")
+    AirData?.filter((air) => air.city === "Rabat")
   );
 
   const searchfilter = () => {
@@ -95,23 +114,7 @@ const Map = () => {
   };
 
   function rankCO(x) {
-    //source:https://www.dhs.wisconsin.gov/chemical/carbondioxide.htm#:~:text=The%20levels%20of%20CO2%20in,of%20drowsiness%20and%20poor%20air.
-    if (x >= 350 && x <= 400) {
-      //400 ppm: average outdoor air level.
-      return "gradientgreen";
-    } else if (x >= 400 && x <= 1000) {
-      //400–1,000 ppm: typical level found in occupied spaces with good air exchange.
-      return "gradientblue";
-    } else if (x >= 1000 && x <= 2000) {
-      //1,000–2,000 ppm: level associated with complaints of drowsiness and poor air.
-      return "gradientyellow";
-    } else if (x >= 2000 && x <= 5000) {
-      //2,000–5,000 ppm: level associated with headaches, sleepiness, and stagnant, stale, stuffy air. Poor concentration, loss of attention, increased heart rate and slight nausea may also be present.
-      return "gradientred";
-    } else if (x >= 5000 && x <= 40000) {
-      //this indicates unusual air conditions where high levels of other gases could also be present. Toxicity or oxygen deprivation could occur. This is the permissible exposure limit for daily workplace exposures. over 40,000 ppm: this level is immediately harmful due to oxygen deprivation.*
       return "gradientcrimsonred";
-    }
   }
 
   function rankAQ(x) {
@@ -128,15 +131,32 @@ const Map = () => {
 
   return (
     <>
+      <FirebaseDatabaseProvider firebase={firebase} {...config}>
+      <FirebaseDatabaseNode
+        path="IOT/"
+        orderByKey
+      >
+        {(d) => {
+          const data=[];
+          data.push(d);
+          setAirData(data);
+          return (
+            <React.Fragment>
+            </React.Fragment>
+          );
+        }}
+
+  
+
+      </FirebaseDatabaseNode>
+    </FirebaseDatabaseProvider>
       <Container fluid>
         <Row className="my-3">
           <Col lg={2} className="my-3 my-md-3 my-lg-0">
-              <img src={pin} alt="PIN" align="middle" width="40%" />
-
-              <img src={rabat} alt="Rabat" width="60%" />
-            
+            <img src={pin} alt="PIN" align="middle" width="40%" />
+            <img src={rabat} alt="Rabat" width="60%" />
           </Col>
-          <Col lg={1} ></Col>
+          <Col lg={1}></Col>
           <Col lg={5} className="d-inline-flex my-5 my-lg-0">
             <div className="iconthemebluebackground">
               <img
@@ -217,43 +237,46 @@ const Map = () => {
             >
               <TileLayer
                 attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-                url="https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/{z}/{x}/{y}?access_token=pk.eyJ1Ijoia2FiYXlsYSIsImEiOiJjanZ0MHc4NXozNXR0NDNwYjEzOWRqdXgzIn0.QcoogvQS_iNdrUSM8ZA_yA"
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
               />
-
-              {filteredmonitors.map((air) => (
-                <Marker
-                  key={air.id}
-                  position={[air.latitude, air.longitude]}
-                  icon={markerIcon()}
-                >
-                  <Popup>
-                    <div className="float-container">
-                      <div className="float-child">
-                        <div
-                          className="background"
-                          style={{ background: `${color}` }}
-                        >
-                          <img
-                            src={airq}
-                            alt="Air Quality"
-                            id={rankAQ(air.airquality)}
-                          />
+              { AirData?.map((air) => (
+                 
+                 (air.value?.Latitude && air.value?.Longitude) ?
+                 <Marker
+                   key={air.value?.ID}
+                   position={[air.value?.Latitude, air.value?.Longitude]}
+                   icon={markerIcon()}
+                 >
+                   <Popup>
+                     <div className="float-container">
+                        <div className="float-child">
+                            <div
+                              className="background"
+                              style={{ background: `${color}` }}
+                            >
+                            <img
+                              src={airq}
+                              alt="Air Quality"
+                              id={rankAQ(air.value?.AirQuality)}
+                            />
+                            </div>
+                            <br />
+                            <b>Qualité de l'air</b> <br />
+                            {air.value?.AirQuality}
                         </div>
-                        <br />
-                        <b>Qualité de l'air</b> <br />
-                        {air.airquality}%
-                      </div>
 
                       <div className="float-child">
                         <div
                           className="background"
                           style={{ background: `${color}` }}
                         >
-                          <img src={co2} alt="CO2" id={rankCO(air.CO)} />
+                          <img src={co2} 
+                          alt="CO2" 
+                          id={rankCO(air.value?.CO)} />
                         </div>
                         <br />
                         <b>Taux de CO</b> <br />
-                        {air.CO} ppm
+                        {air.value?.CO} 
                       </div>
 
                       <div className="float-child">
@@ -264,14 +287,14 @@ const Map = () => {
                           <img
                             src={industry}
                             alt="Industry"
-                            id={rankLPG(air.LPG)}
+                            id={rankLPG(air.value?.LPG)}
                           />
                         </div>
                         <br />
                         <b>Taux de GPL</b> <br />
                         <i>(Gaz de pétrole liquéfié)</i>
                         <br />
-                        {air.LPG} ppm
+                        {air.value?.LPG} 
                       </div>
 
                       <div className="float-child">
@@ -282,12 +305,12 @@ const Map = () => {
                           <img
                             src={smoke}
                             alt="Smoke"
-                            id={rankSmoke(air.smoke)}
+                            id={rankSmoke(air.value?.smoke)}
                           />
                         </div>
                         <br />
                         <b>Taux de Fumée</b> <br />
-                        {air.smoke} ppm
+                        {air.value?.smoke} 
                       </div>
 
                       <div className="float-child">
@@ -296,7 +319,7 @@ const Map = () => {
                         </div>
                         <br />
                         <b>Taux de l'humidité</b> <br />
-                        {air.H} %
+                        {air.value?.H} 
                       </div>
 
                       <div className="float-child">
@@ -305,12 +328,13 @@ const Map = () => {
                         </div>
                         <br />
                         <b>Température</b> <br />
-                        {air.T} °C
+                        {air.value?.T} 
                       </div>
-                    </div>
-                  </Popup>
-                </Marker>
-              ))}
+                     </div>
+                   </Popup>
+                 </Marker> : ''
+
+                ))}
             </MapContainer>
           </Col>
         </Row>

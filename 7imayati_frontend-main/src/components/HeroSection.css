@@ -7,9 +7,17 @@
   font-size: 45px;
  }
 
+
  .hero-subtitle{
   color: #0A7DCD;
   font-family: Poppins;
+ }
+
+ .hero-subtitle1{
+  color: #0A7DCD;
+  font-family: Poppins;
+  font-size: 32px;
+  margin:50px;
  }
 
 
@@ -210,3 +218,25 @@
     height: 58px;
     width: 187px;
   }
+
+
+  .btn-grad {background-image: linear-gradient(to right, #0A7DCD 0%, #26a0da  51%, #1b6192  100%)}
+  .btn-grad {
+     margin: 10px;
+     padding: 15px 45px;
+     text-align: center;
+     text-transform: uppercase;
+     transition: 0.5s;
+     background-size: 200% auto;
+     color: white;            
+     box-shadow: 0 0 20px #eee;
+     border-radius: 10px;
+     display: block;
+   }
+
+   .btn-grad:hover {
+     background-position: right center; /* change the direction of the change here */
+     color: #fff;
+     text-decoration: none;
+   }
+  

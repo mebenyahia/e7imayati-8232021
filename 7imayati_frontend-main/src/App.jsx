@@ -9,8 +9,10 @@ import Navbar from "./components/header/Navbar";
 import About from "./pages/About";
 import Browse from "./pages/Browse";
 import Data from "./pages/Data";
+import DatabaseList from "./pages/DatabaseList";
 import FAQ from "./pages/FAQ";
 import Research from "./pages/research";
+import Dashboard from "./pages/Dashboard";
 import { Home, Login, Register, NotFoundPage } from "./pages/index";
 import Map from "./pages/Map";
 
@@ -33,6 +35,8 @@ const App = () => {
             <Route exact path="/about" component={About} />
             <Route exact path="/Faq" component={FAQ} />
             <Route exact path="/Research" component={Research}/>
+            <Route exact path="/DatabaseList" component={DatabaseList}/>
+            <Route exact path="/Dashboard" component={Dashboard}/>
             <Redirect to="/404" />
           </Switch>
         </Router>

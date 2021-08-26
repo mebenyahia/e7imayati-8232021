@@ -15,7 +15,8 @@ function HeroSection() {
   font-family: Poppins;
   font-size: 18px;
   padding: 5px 20px;
-  border-color: white;
+  border-color: #0A7DCD;
+  border: none;
   border-radius: 0px;
   margin: 2px 2px;
   cursor: pointer;
