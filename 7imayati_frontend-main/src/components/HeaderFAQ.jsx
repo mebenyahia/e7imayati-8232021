@@ -7,7 +7,7 @@ import "./HeroSection.css"
 import styled from 'styled-components';
 import {Link, Redirect, useHistory} from "react-router-dom";
 
-import city from "./../assets/img/pincity.svg";
+import city from "./../assets/img/map.svg";
 
 
 
@@ -23,10 +23,10 @@ function HeaderFAQ() {
   border-radius: 0px;
   margin: 2px 2px;
   cursor: pointer;
-  height: 244px;
-  width: 243px;
-  
+  height: 50px;
+  width: 180px;
 `;
+
 
 
 const history = useHistory();
@@ -34,37 +34,55 @@ const history = useHistory();
 
   return (
 
-      <div className="container" align="left">
-        <div className="row">
-          <span className="hero-title" align="left" >
-           E-7imayati,
-          </span>
-          <span className="hero-subtitle">
-            <p><b>découvrez ce que vous ne savez toujours pas.</b></p>
-            </span>
-        </div>
+
+<div className="container">
+  <div className="row">
+    <div className="col-sm-5 col-sm-pull-5">
+            <span className="hero-title" align="left" >
+                  E-7imayati,
+                  </span>
+                  <span className="hero-subtitle">
+                  <p><b>découvrez ce que vous ne savez toujours pas.</b></p>
+                  </span>
+    </div>
+
+
+    <div className="col-sm-4 col-sm-push-5" align="center"  >
+      <Image src={city} width="300%" height="300%" />
+    </div>
+  </div>
+  
+  <div className="row">
+    <div className="col" align="center">
+    <span className="hero-subtitle">
+                  <p><b>Notre Mission</b></p>
+                  </span>
+
+  <p>
+  E-7imayati tacle deux problématiques dans le domaine de la sécurité, dont la Sécurité publique la sécurité sanitaire .
+  La sécurité est un problème alarmant dans les grandes villes d’où l’utilité d’une plateforme web qui permet à l'administration d’un compound privé
+   ou à l’autorité d'une ville d’identifier les personnes suspectes ou d’identifier des enfants perdus. Quant à la sécurité sanitaire, 
+   la pollution de l’air est un problème environnemental majeur, qui a, en surcroit, un impact important sur le climat à l'échelle globale.
+  </p>
+    </div>
+
+    <div className="col" align="center">
+
+
+    <Button type="button" onClick={() => history.push('/login')} >
+      Voir la démo
+    </Button>
+</div>
+  
+  </div>
+
+</div>
+
 
         
-            <img src={city} alt="city"
-            height="300"
-            width="300"/>
 
-
-
-
-        <div className="row">
-          <div className="col">
-          <span className="hero-subtitle">
-            <p><b>Notre mission</b></p>
-            </span>
+        
             
-          </div>
-
-          <div className="col">
-            Demo
-          </div>
-        </div>
-      </div>
 
 
 

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Container, Row, Col, Form, Button, Image } from "react-bootstrap";
 import { MdAccountCircle, MdError, MdPersonOutline } from "react-icons/md";
 import { FaEnvelope, FaLock, FaCheck, FaEye } from "react-icons/fa";
@@ -6,47 +6,37 @@ import Search from "../assets/img/search.svg";
 
 import {ex} from '../helpers/utils'
 
-const Research = () => {
-  const [values, setValues] = React.useState({
-    firstname: "",
-    lastname: "",
-    identifiant: "",
-  });
-  useEffect(() => {
-    
-    if (values.email) {
-      let check = ex.validEmailRegex.test(values.email);
-      if (check) {
-        setValues((v) => ({
-          ...v,
-          validEmail: true,
-        }));
-        global.console.log("Valid email : " + values.validEmail);
-      } else {
-        setValues((v) => ({
-          ...v,
-          validEmail: false,
-        }));
-        global.console.warn("Invalid email : " + values.validEmail);
-      }
-    } else {
-      setValues((v) => ({
-        ...v,
-        validEmail: null,
-      }));
-    }
-  }, [values.email, values.validEmail]);
+import firebase from "firebase/app";
+import "firebase/database";
+import {
+  FirebaseDatabaseProvider,
+  FirebaseDatabaseNode,
+} from "@react-firebase/database";
+import { config } from "../firebase_config";
 
-  const showPassword = () => {
-    setValues({ ...values, showPassword: !values.showPassword });
+const Research = () => {
+  const [personData, setPersonData] = useState(null);
+  const [identifiant, setIdentifiant] = useState("");
+
+  const [filteredperson, setFilteredPerson] = useState("");
+
+  const searchfilter = () => {
+    setFilteredPerson(
+      personData.filter(
+        (person) => person.value?.ImagName === {identifiant}
+      )
+    );
   };
-  const handleChange = (prop) => (event) => {
-    setValues({ ...values, [prop]: event.target.value });
+
+
+  const onHandleChange = (e) => {
+    setIdentifiant(e.target.value);
   };
-  const onSubmit = (e) => {
-    e.preventDefault();
-    global.console.log(values);
-  };
+
+
+  const [limit, setLimit] = React.useState(1);
+  const [data, setData] = React.useState([]);
+  const s = (a) => JSON.stringify(a);
 
   return (
     <>
@@ -57,7 +47,7 @@ const Research = () => {
             <Image src={Search} fluid className="w-100" />
           </Col>
           <Col lg={8} className="p-5 h-100">
-            <Form className="mx-3 my-auto" onSubmit={onSubmit}>
+        
               <legend className="text-center mt-0 mb-3">Aidez-nous à retrouver un enfant perdu</legend>
               <div className="field">
                 <p className="control has-icons-left has-icons-right mb-1">
@@ -65,29 +55,64 @@ const Research = () => {
                     className={`input`}
                     type="text"
                     placeholder="Identifiant"
-                    onChange={handleChange("identifiant")}
-                    value={values.identifiant}
+                    onChange={onHandleChange}
                   />
                 </p>
               </div>
+              {identifiant}
+
               <div className="field row">
               <p className="control col-6 mx-auto d-grid gap-2">
-                <a href="/result" className="w-100 fw-bolder text-center td-none">
                   <Button
                     variant="primary"
                     className="btn-block text-white"
-                    type="submit"
-                    disabled={values.validEmail !== true}
+                    onClick={searchfilter}
                   >
                     Rechercher
                   </Button>
-                  </a>
                 </p>
               </div>
-            </Form>
+          
            
           </Col>
         </Row>
+
+
+        <FirebaseDatabaseProvider firebase={firebase} {...config}>
+      <FirebaseDatabaseNode
+        path="camera/"
+        orderByKey
+      >
+        {(d) => {
+          return (
+            <React.Fragment>
+              {d.value ? <pre>D = {Object.keys(d.value).length}</pre> : ""}
+              {d.value
+                ? Object.keys(d.value).filter(v => d.value[v]?.ImagName.includes("27566E19")).map((k) => (
+                    <>
+                      <h3>{s(k)}</h3>
+                      <p>{s(d.value[k])}</p>
+                      
+                    </>
+                    
+                  ))
+                : ""}
+
+              
+              <button
+                onClick={() => {
+                  setLimit(limit + 2);
+                }}
+              >
+                Load more
+              </button>
+            </React.Fragment>
+          );
+        }}
+
+      </FirebaseDatabaseNode>
+    </FirebaseDatabaseProvider>
+       {s(filteredperson)}
       </Container>
     </>
   );

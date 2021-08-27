@@ -113,20 +113,82 @@ const Map = () => {
     hazardous: "gradientcrimsonred",
   };
 
-  function rankCO(x) {
+  function rankCO(CoMq7) {
+    var str = CoMq7;
+    var CoMq7 = str.replace(/\D/g, "");
+
+    if (CoMq7 < 36) {
+      return "gradientlightgreen";
+
+    } else if ( CoMq7 >= 36 && CoMq7 <= 200) {
+      return "gradientblue";
+
+    } else if(CoMq7 > 200 && CoMq7 <= 400) {
+      return "gradientyellow";
+
+    }else if(CoMq7 > 400 && CoMq7 <= 800) {
+      return "gradientred";
+
+    }else if(CoMq7 > 800 && CoMq7 <= 3200) {
+      return "gradientcrimsonred";
+
+    }else {
+      return "gradientcrimsonred";
+    }
+
+  }
+
+  function rankAQ(AirMQ135) {
+    var str = AirMQ135;
+    var AirMQ135 = str.replace(/\D/g, "");
+
+    if (AirMQ135 < 50) {
+      return "gradientlightgreen";
+
+    } else if (AirMQ135 >= 51 && AirMQ135 <= 100) {
+      return "gradientblue";
+
+    } else if(AirMQ135 >= 101 && AirMQ135 <= 150){
+      return "gradientyellow";
+      
+    }else if (AirMQ135 >= 151 && AirMQ135 <= 200) {
+      return "gradientred";
+
+    } else if(AirMQ135 >= 201 && AirMQ135 <= 300){
+      return "gradientcrimsonred";
+      
+    }else{
+      return "gradientcrimsonred";
+
+  } }
+
+  function rankLPG(lpg) {
       return "gradientcrimsonred";
   }
 
-  function rankAQ(x) {
-    return "gradientblue";
-  }
+  function rankSmoke(smoke) {
+    var str = smoke;
+    var smoke = str.replace(/\D/g, "");
 
-  function rankLPG(x) {
-    return "gradientyellow";
-  }
+    if (smoke < 51) {
+      return "gradientlightgreen";
 
-  function rankSmoke(x) {
-    return "gradientlightgreen";
+    } else if (smoke >= 51 && smoke <= 100) {
+      return "gradientblue";
+
+    }else if (smoke >= 101 && smoke < 151) {
+      return "gradientyellow";
+
+    }else if (smoke >= 151 && smoke <= 200) {
+      return "gradientred";
+
+    }else if (smoke >201 && smoke <= 300) {
+      return "gradientcrimsonred";
+      
+    }else{
+      return "gradientcrimsonred";
+
+  }
   }
 
   return (
@@ -146,10 +208,9 @@ const Map = () => {
           );
         }}
 
-  
-
       </FirebaseDatabaseNode>
     </FirebaseDatabaseProvider>
+    
       <Container fluid>
         <Row className="my-3">
           <Col lg={2} className="my-3 my-md-3 my-lg-0">
@@ -163,6 +224,7 @@ const Map = () => {
                 src={placeholderSearchIco[searchby]}
                 alt="Small Icon"
                 align="center"
+                className="pin"
               />
             </div>
             <select
